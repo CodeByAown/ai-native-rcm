@@ -1,0 +1,12 @@
+prefect
+langgraph
+langgraph-checkpoint
+openai
+redis
+rq
+fastapi
+pytesseract
+python-multipart
+cohere
+sqlalchemy
+psycopg2-binary

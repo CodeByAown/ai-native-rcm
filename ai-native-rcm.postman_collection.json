@@ -1,0 +1,61 @@
+{
+	"info": {
+		"_postman_id": "4d4071a9-0cee-476b-9068-4447c20a3d9f",
+		"name": "ai-native-rcm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2156905"
+	},
+	"item": [
+		{
+			"name": "eligibility_agent",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8000/run",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8000",
+					"path": [
+						"run"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"model\": \"deepseek-r1:8b\", \r\n    \"messages\": [{\"role\": \"user\", \"content\": \"prompt\"}],\r\n    \"stream\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://ollama:11434/api/chat",
+					"protocol": "http",
+					"host": [
+						"ollama"
+					],
+					"port": "11434",
+					"path": [
+						"api",
+						"chat"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

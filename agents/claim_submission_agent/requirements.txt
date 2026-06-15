@@ -1,0 +1,10 @@
+prefect
+langgraph
+langgraph-checkpoint
+openai
+redis
+rq
+fastapi
+cohere
+sqlalchemy
+psycopg2-binary

@@ -1,0 +1,198 @@
+#version: "3.9"
+
+services:
+  ai_native_rcm_frontend:
+    build:
+      context: ./ai_native_rcm_frontend
+      dockerfile: Dockerfile
+    profiles: ["agents", "frontend"]
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BACKEND_API_URL="http://84.247.129.35:9000"
+    restart: unless-stopped
+    networks:
+      - rcm_net
+
+  orchestrator:
+    build:
+      context: ./orchestrator
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["orchestrator", "agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "9000:9000"
+    networks:
+      - rcm_net
+
+  eligibility_agent:
+    build:
+      context: ./agents/eligibility_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8000:8000"
+    networks:
+      - rcm_net
+  
+  prior_auth_agent:
+    build:
+      context: ./agents/prior_auth_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8001:8001"
+    networks:
+      - rcm_net
+  
+  clinical_doc_agent:
+    build:
+      context: ./agents/clinical_doc_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8002:8002"
+    networks:
+      - rcm_net
+  
+  medical_coding_agent:
+    build:
+      context: ./agents/medical_coding_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8003:8003"
+    networks:
+      - rcm_net
+  
+  claim_scrubbing_agent:
+    build:
+      context: ./agents/claim_scrubbing_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8004:8004"
+    networks:
+      - rcm_net
+  
+  claim_submission_agent:
+    build:
+      context: ./agents/claim_submission_agent
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    profiles: ["agents"]
+    volumes:
+      - ./:/app
+      - ./uploads:/uploads
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - "8005:8005"
+    networks:
+      - rcm_net
+  
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_USER=humaein
+      - POSTGRES_PASSWORD=humaein
+      - POSTGRES_DB=humaein
+    profiles: ["agents"]
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rcm_net
+
+  redis:
+    image: redis:7.2
+    restart: always
+    profiles: ["redis", "agents"]
+    ports:
+      - "0.0.0.0:${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - rcm_net
+  
+volumes:
+  redis_data:
+    driver: local
+  uploads:
+  postgres_data:
+
+networks:
+  rcm_net:
+    driver: bridge
